@@ -30,6 +30,8 @@ from . import GitHubV3MarkdownRenderer, CLIEnum, RenderMode, VERSION, logger
 
 STDSTREAM_PATH = Path('-')
 
+_run_main = __name__ == '__main__'
+
 class ExceptHook:
     def __init__(self, logger: logging.Logger=logger, level: int=logging.CRITICAL) -> None:
         self.logger = logger
@@ -131,9 +133,16 @@ def stdopen(path: Path, stream: TextIO, mode: str='r') -> TextIO:
         return cast(TextIO, path.open(mode))
 
 def main(arglist: Optional[Sequence[str]]=None) -> int:
+    if _run_main:
+        sys.excepthook = ExceptHook()
+        logging.basicConfig(
+            format='%(name)s: %(levelname)s: %(message)s',
+            level=logging.INFO,
+        )
     args = parse_arguments(arglist)
     if args.log_level is not None:
-        logging.getLogger().setLevel(args.log_level.value)
+        main_logger = logging.getLogger() if _run_main else logger
+        main_logger.setLevel(args.log_level.value)
 
     with stdopen(args.markdown_file, sys.stdin) as in_file:
         markdown_source = in_file.read()
@@ -154,9 +163,4 @@ def main(arglist: Optional[Sequence[str]]=None) -> int:
     return os.EX_OK
 
 if __name__ == '__main__':
-    sys.excepthook = ExceptHook()
-    logging.basicConfig(
-        format='%(name)s: %(levelname)s: %(message)s',
-        level=logging.INFO,
-    )
     exit(main())
