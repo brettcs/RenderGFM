@@ -5,6 +5,7 @@
 # Apache License 2.0
 #   <https://opensource.org/licenses/Apache-2.0>
 
+import enum
 import logging
 
 import requests
@@ -14,7 +15,11 @@ from urllib import parse as urlparse
 from typing import (
     NamedTuple,
     Optional,
+    Type,
+    TypeVar,
 )
+
+ET = TypeVar('ET', bound=enum.Enum)
 
 logger = logging.getLogger('RenderGFM')
 
@@ -26,6 +31,15 @@ class _Version(NamedTuple):
     def __str__(self) -> str:
         return '.'.join(str(n) for n in self)
 VERSION = _Version(0, 1)
+
+
+class CLIEnum(enum.Enum):
+    @classmethod
+    def from_str(cls: Type[ET], s: str) -> ET:
+        try:
+            return cls[s.upper()]
+        except KeyError:
+            raise ValueError(f"unknown {cls.__name__} {s!r}") from None
 
 
 class GitHubV3MarkdownRenderer:

@@ -26,7 +26,7 @@ from typing import (
     Type,
 )
 
-from . import GitHubV3MarkdownRenderer, VERSION, logger
+from . import GitHubV3MarkdownRenderer, CLIEnum, VERSION, logger
 
 STDSTREAM_PATH = Path('-')
 
@@ -67,7 +67,7 @@ class ExceptHook:
         os._exit(exitcode)
 
 
-class LogLevel(enum.IntEnum):
+class LogLevel(CLIEnum):
     CRIT = logging.CRITICAL
     CRITICAL = CRIT
     DEBUG = logging.DEBUG
@@ -79,13 +79,6 @@ class LogLevel(enum.IntEnum):
     NOTICE = INFO
     WARN = logging.WARNING
     WARNING = WARN
-
-    @classmethod
-    def from_str(cls, s: str) -> 'LogLevel':
-        try:
-            return cls[s.upper()]
-        except KeyError:
-            raise ValueError(f"unknown log level {s!r}") from None
 
 
 def parse_arguments(arglist: Optional[Sequence[str]]=None) -> argparse.Namespace:
