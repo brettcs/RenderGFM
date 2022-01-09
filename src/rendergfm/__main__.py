@@ -40,7 +40,7 @@ class ExceptHook:
     def __call__(self,
                  exc_type: Type[BaseException],
                  exc_value: BaseException,
-                 exc_tb: types.TracebackType,
+                 exc_tb: Optional[types.TracebackType]=None,
     ) -> NoReturn:
         if isinstance(exc_value, HTTPError):
             msg = "HTTP error: {req.method} {req.url}: {res.reason} ({res.status_code})".format(
