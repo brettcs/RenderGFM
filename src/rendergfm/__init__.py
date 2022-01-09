@@ -30,7 +30,7 @@ class _Version(NamedTuple):
 
     def __str__(self) -> str:
         return '.'.join(str(n) for n in self)
-VERSION = _Version(1, 0)
+VERSION = _Version(1, 0, 1)
 
 
 class CLIEnum(enum.Enum):
