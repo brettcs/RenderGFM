@@ -26,7 +26,7 @@ from typing import (
     Type,
 )
 
-from . import GitHubV3MarkdownRenderer, CLIEnum, VERSION, logger
+from . import GitHubV3MarkdownRenderer, CLIEnum, RenderMode, VERSION, logger
 
 STDSTREAM_PATH = Path('-')
 
@@ -95,6 +95,13 @@ def parse_arguments(arglist: Optional[Sequence[str]]=None) -> argparse.Namespace
         help="Path to write rendered HTML. Default stdout.",
     )
     parser.add_argument(
+        '--mode', '-m',
+        type=RenderMode.from_str,
+        default=RenderMode.GFM,
+        help="""Rendering mode. Choices are gfm (for GitHub-Flavored Markdown)
+or plain (for regular Markdown). Default gfm.
+""")
+    parser.add_argument(
         '--log-level', '--loglevel',
         metavar='LEVEL',
         type=LogLevel.from_str,
@@ -126,7 +133,7 @@ def main(arglist: Optional[Sequence[str]]=None) -> int:
         markdown_source = in_file.read()
 
     renderer = GitHubV3MarkdownRenderer()
-    render_result = renderer.render(markdown_source)
+    render_result = renderer.render(markdown_source, args.mode)
     logger.debug(
         "%s render returned %s %s",
         render_result.url,

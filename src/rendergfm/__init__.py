@@ -42,6 +42,15 @@ class CLIEnum(enum.Enum):
             raise ValueError(f"unknown {cls.__name__} {s!r}") from None
 
 
+class RenderMode(CLIEnum):
+    GITHUB_FLAVORED_MARKDOWN = 'gfm'
+    GITHUB = GITHUB_FLAVORED_MARKDOWN
+    GFM = GITHUB_FLAVORED_MARKDOWN
+    GH = GITHUB_FLAVORED_MARKDOWN
+    MARKDOWN = 'markdown'
+    PLAIN = MARKDOWN
+
+
 class GitHubV3MarkdownRenderer:
     API_ROOT = 'https://api.github.com/'
     API_PATH = 'markdown'
@@ -54,10 +63,10 @@ class GitHubV3MarkdownRenderer:
         self.headers['Accept'] = 'application/vnd.github.v3+json'
         self.headers['User-Agent'] = f"RenderGFM/{VERSION} ({self.headers['User-Agent']})"
 
-    def render(self, markdown: str) -> requests.Response:
+    def render(self, markdown: str, mode: RenderMode=RenderMode.GFM) -> requests.Response:
         return requests.post(
             self.url, headers=self.headers, json={
-                'mode': 'gfm',
+                'mode': mode.value,
                 'text': markdown,
             },
         )
