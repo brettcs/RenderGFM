@@ -63,10 +63,15 @@ class GitHubV3MarkdownRenderer:
         self.headers['Accept'] = 'application/vnd.github.v3+json'
         self.headers['User-Agent'] = f"RenderGFM/{VERSION} ({self.headers['User-Agent']})"
 
-    def render(self, markdown: str, mode: RenderMode=RenderMode.GFM) -> requests.Response:
-        return requests.post(
-            self.url, headers=self.headers, json={
-                'mode': mode.value,
-                'text': markdown,
-            },
-        )
+    def render(self,
+               markdown: str,
+               mode: RenderMode=RenderMode.GFM,
+               context: Optional[str]=None,
+               ) -> requests.Response:
+        req_body = {
+            'mode': mode.value,
+            'text': markdown,
+        }
+        if context is not None:
+            req_body['context'] = context
+        return requests.post(self.url, headers=self.headers, json=req_body)

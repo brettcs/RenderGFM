@@ -102,6 +102,12 @@ def parse_arguments(arglist: Optional[Sequence[str]]=None) -> argparse.Namespace
 or plain (for regular Markdown). Default gfm.
 """)
     parser.add_argument(
+        '--context', '-c',
+        help="""Rendering context. Pass a repository path (like
+`brettcs/RenderGFM`) to automatically generate GitHub links to issues, pull
+requests, etc.
+""")
+    parser.add_argument(
         '--log-level', '--loglevel',
         metavar='LEVEL',
         type=LogLevel.from_str,
@@ -133,7 +139,7 @@ def main(arglist: Optional[Sequence[str]]=None) -> int:
         markdown_source = in_file.read()
 
     renderer = GitHubV3MarkdownRenderer()
-    render_result = renderer.render(markdown_source, args.mode)
+    render_result = renderer.render(markdown_source, args.mode, args.context)
     logger.debug(
         "%s render returned %s %s",
         render_result.url,
